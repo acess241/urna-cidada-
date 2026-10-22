@@ -20,6 +20,10 @@ do $$ begin
 end $$;
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000001',true);
 select public.urna_configure('Teste',2,'[{"number":"91","name":"Opção A"},{"number":"92","name":"Opção B"}]'::jsonb);
+select public.urna_configure('Teste revisado',2,'[{"number":"91","name":"Opção revisada"},{"number":"92","name":"Opção B"}]'::jsonb);
+do $$ begin
+ if public.urna_state()->>'title'<>'Teste revisado' or jsonb_array_length(public.urna_state()->'candidates')<>2 then raise exception 'Candidate replacement failed'; end if;
+end $$;
 select public.urna_transition('start');
 set local role anon;
 select set_config('request.jwt.claim.sub','',true);

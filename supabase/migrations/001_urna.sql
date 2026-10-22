@@ -69,7 +69,7 @@ begin
  end if;
  if jsonb_typeof(p_candidates) is distinct from 'array' then raise exception 'Informe os candidatos.'; end if;
  if jsonb_array_length(p_candidates) not between 2 and 100 then raise exception 'Cadastre de 2 a 100 candidatos.'; end if;
- delete from urna_private.candidates;
+ delete from urna_private.candidates where number is not null;
  for candidate in select value from jsonb_array_elements(p_candidates) loop
   n=trim(candidate->>'number'); name_value=trim(candidate->>'name'); party_value=trim(coalesce(candidate->>'party',''));
   if n is null or n !~ '^[0-9]+$' or length(n)<>p_digits or name_value is null or length(name_value) not between 1 and 80 or length(party_value)>60 then

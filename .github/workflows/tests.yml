@@ -43,6 +43,7 @@ jobs:
         run: |
           psql -h localhost -U postgres -d urna_test -v ON_ERROR_STOP=1 -f tests/supabase-bootstrap.sql
           psql -h localhost -U postgres -d urna_test -v ON_ERROR_STOP=1 -f supabase/migrations/001_urna.sql
+          psql -h localhost -U postgres -d urna_test -v ON_ERROR_STOP=1 -f supabase/migrations/002_fix_candidate_delete.sql
           psql -h localhost -U postgres -d urna_test -v ON_ERROR_STOP=1 -f tests/supabase.sql
       - uses: actions/setup-python@v5
         with:
