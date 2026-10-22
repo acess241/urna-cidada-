@@ -1,5 +1,5 @@
 """Empacota somente a interface pública; não inclui banco, Python ou segredos de servidor."""
-import json,os,shutil
+import hashlib,json,os,shutil
 from pathlib import Path
 root=Path(__file__).resolve().parents[1]
 out=root/'pages-dist'
@@ -10,6 +10,7 @@ url=(os.environ.get('SUPABASE_URL') or defaults['url']).rstrip('/')
 key=os.environ.get('SUPABASE_ANON_KEY') or defaults['key']
 if not url.startswith('https://') or not key:
     raise SystemExit('Configure SUPABASE_URL e SUPABASE_ANON_KEY antes de publicar.')
+version=hashlib.sha256(b''.join((root/'public'/n).read_bytes() for n in ('app.js','supabase-adapter.js','style.css'))).hexdigest()[:12]
 for name in ('index.html','admin.html','app.js','style.css','supabase-adapter.js'):
     content=(root/'public'/name).read_text()
     if name.endswith('.html'):
@@ -19,6 +20,8 @@ for name in ('index.html','admin.html','app.js','style.css','supabase-adapter.js
             content=content.replace('<label for="password">','<label for="adminEmail">E-mail do administrador</label><input id="adminEmail" type="email" required autocomplete="username"><label for="password">')
             content=content.replace('minlength="16"','minlength="1"')
             content=content.replace('Administração protegida por senha e sessão temporária.','Administração pelo Supabase Auth. Recarregar a página exige novo login.')
+        for asset in ('style.css','app.js','supabase-adapter.js','config.js'):
+            content=content.replace('./'+asset+'\"','./'+asset+'?v='+version+'\"')
     (out/name).write_text(content)
 (out/'config.js').write_text('window.urnaSupabase='+json.dumps({'url':url,'key':key})+';\n')
 (out/'.nojekyll').touch()

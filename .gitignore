@@ -3,3 +3,4 @@ data/
 __pycache__/
 *.sqlite*
 pages-dist/
+node_modules/

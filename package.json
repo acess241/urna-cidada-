@@ -1,0 +1,1 @@
+{"name":"urna-cidada-tests","private":true,"scripts":{"test":"node --test tests/admin-ui.cjs"},"devDependencies":{"jsdom":"30.1.3"}}
