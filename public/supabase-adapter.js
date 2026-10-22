@@ -7,7 +7,7 @@ async function request(path,data,authorized=false){
  const headers={apikey:config.key,'Content-Type':'application/json'};
  if(authorized){if(!token)throw Error('Entre como administrador.');headers.Authorization='Bearer '+token;}
  let r;try{r=await fetch(config.url+path,{method:'POST',headers,body:JSON.stringify(data||{})});}catch{throw Error('Sem conexão. Se acabou de confirmar, não repita o voto automaticamente: ele pode ter sido recebido.');}
- const body=await r.json();if(!r.ok)throw Error(body.message||body.msg||body.error_description||'Não foi possível concluir a operação.');return body;
+ const body=await r.json();if(!r.ok){if(body.code==='PGRST202')throw Error('A votação está em preparação. Falta instalar a estrutura da urna no Supabase.');throw Error(body.message||body.msg||body.error_description||'Não foi possível concluir a operação.');}return body;
 }
 window.urnaApi=async(path,data)=>{
  if(path==='/api/state')return request('/rest/v1/rpc/urna_state',{});
