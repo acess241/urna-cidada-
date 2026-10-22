@@ -5,8 +5,9 @@ root=Path(__file__).resolve().parents[1]
 out=root/'pages-dist'
 if out.exists():shutil.rmtree(out)
 out.mkdir()
-url=os.environ.get('SUPABASE_URL','').rstrip('/')
-key=os.environ.get('SUPABASE_ANON_KEY','')
+defaults=json.loads((root/'public'/'supabase-public.json').read_text())
+url=(os.environ.get('SUPABASE_URL') or defaults['url']).rstrip('/')
+key=os.environ.get('SUPABASE_ANON_KEY') or defaults['key']
 if not url.startswith('https://') or not key:
     raise SystemExit('Configure SUPABASE_URL e SUPABASE_ANON_KEY antes de publicar.')
 for name in ('index.html','admin.html','app.js','style.css','supabase-adapter.js'):
